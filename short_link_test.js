@@ -2,7 +2,7 @@ import { check } from "k6";
 import http from "k6/http";
 
 export const options = {
-  stages: [{ duration: "10s", target: 100 }],
+  stages: [{ duration: "1m", target: 100 }],
   thresholds: {
     http_reqs: ["rate > 100"],
   },
