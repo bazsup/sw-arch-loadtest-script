@@ -24,13 +24,7 @@ export function testCreate(longurl) {
   return r;
 }
 
-/**
- *
- * @param {import("k6/http").RefinedResponse} createRes
- * @param {string} longurl
- */
-export function testGetRedirect(createRes, longurl) {
-  const shortLink = createRes.json("link");
+export function testGetRedirect(shortLink, longurl) {
   const r = http.get(shortLink, { redirects: 0 });
   check(r, {
     "is redirect": (r) => r.status === 302,
@@ -41,5 +35,6 @@ export function testGetRedirect(createRes, longurl) {
 export default function () {
   const longurl = `https://www.google.com/?q=vu%20${__VU},iter%20${__ITER}`;
   var r = testCreate(longurl);
-  testGetRedirect(r, longurl)
+  const shortLink = r.json('link');
+  testGetRedirect(shortLink, longurl)
 }
