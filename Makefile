@@ -1,5 +1,5 @@
 test:
-	k6 run http_post.js
+	k6 run short_link_test.js
 
 example:
-	HOSTNAME=test.k6.io k6 run http_post.js
+	HOSTNAME=localhost:3000 k6 run short_link_test.js
