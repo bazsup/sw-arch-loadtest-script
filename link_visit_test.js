@@ -7,7 +7,7 @@ export let GetShortLinkTrendRTT = new Trend("RTT get short link");
 export let GetStatsTrendRTT = new Trend("RTT get stats");
 
 export const options = {
-  stages: [{ duration: "2s", target: 100 }],
+  stages: [{ duration: "1m", target: 100 }],
   thresholds: {
     iterations: ["rate > 100"],
   },
