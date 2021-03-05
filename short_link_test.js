@@ -4,7 +4,7 @@ import http from "k6/http";
 export const options = {
   stages: [{ duration: "1m", target: 100 }],
   thresholds: {
-    http_reqs: ["rate > 100"],
+    iterations: ["rate > 100"],
   },
 };
 
