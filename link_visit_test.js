@@ -11,6 +11,7 @@ export const options = {
   thresholds: {
     iterations: ["rate > 100"],
   },
+  maxRedirects: 0,
 };
 
 export function testCreate(longurl) {
@@ -29,13 +30,21 @@ export function testCreate(longurl) {
   return r;
 }
 
-export function testGetRedirect(shortLink, longurl) {
-  const r = http.get(shortLink, { redirects: 0 });
-  check(r, {
+export function testGetRedirect(shortLink, longurl, count) {
+  const requests = [];
+  for (let i = 0; i < count; i++) {
+    requests.push({
+      method: "GET",
+      url: shortLink,
+    });
+  }
+  const r = http.batch(requests);
+  const res = r[0];
+  check(res, {
     "is redirect": (r) => r.status === 302,
     "is valid url": (r) => r.headers.Location === longurl,
   });
-  return r;
+  return res;
 }
 
 export function testGetStats(shortLink, expectedVisit) {
@@ -46,16 +55,22 @@ export function testGetStats(shortLink, expectedVisit) {
   return r;
 }
 
+function random(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export default function () {
-  const longurl = `https://www.google.com/?q=vu${__ENV["UNIQUE"]}${__VU}`;
+  const longurl = `https://www.google.com/?q=vu${__ENV["UNIQUE"]}${__VU},iter${__ITER}`;
+
+  const requestsCount = random(300, 500);
+
   var r = testCreate(longurl);
   CreateTrendRTT.add(r.timings.duration);
 
   const shortLink = r.json("link");
-  r = testGetRedirect(shortLink, longurl);
-  GetShortLinkTrendRTT.add(r.timings.duration);
+  r = testGetRedirect(shortLink, longurl, requestsCount);
 
-  const expectedVisitCount = __ITER + 1;
+  const expectedVisitCount = requestsCount;
   r = testGetStats(shortLink, expectedVisitCount);
   GetStatsTrendRTT.add(r.timings.duration);
 }
