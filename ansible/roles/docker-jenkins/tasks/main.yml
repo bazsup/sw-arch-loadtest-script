@@ -1,5 +1,4 @@
 ---
-
 - name: Upload docker jenkins
   copy:
     src: "{{ playbook_dir }}/docker-compose.yml"
@@ -10,6 +9,15 @@
     project_src: .
   register: output
 
-- name: Print docker-compose output
+- name: Capture initial password
+  docker_volume_info:
+    name: "{{ ansible_user }}_jenkins-volume"
+  register: result
+
+- name: Store init password jenkins
+  shell: cat "{{ result.volume.Mountpoint }}/secrets/initialAdminPassword"
+  register: initPassword
+
+- name: Debug initial admin password
   debug:
-    var: output
+    msg: "initial admin password is {{ initPassword.stdout }}"
