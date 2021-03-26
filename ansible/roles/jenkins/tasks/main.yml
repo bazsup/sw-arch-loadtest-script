@@ -1,0 +1,40 @@
+---
+
+- name: Install packages and dependencies
+  apt:
+    name:
+      - openjdk-11-jdk # this specific version is needed for Jenkins to run
+      - libfontconfig
+      - libffi-dev
+      - libncurses5-dev
+    update_cache: "{{ update_apt_cache }}"
+    state: present
+
+- name: Add the Jenkins public GPG key to the apt repo
+  apt_key:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    state: present
+
+- name: Add Jenkins apt repo to the trusted sources list
+  apt_repository:
+    repo: "deb https://pkg.jenkins.io/debian-stable binary/"
+    update_cache: "{{ update_apt_cache }}"
+    state: present
+
+- name: Install Jenkins server
+  apt:
+    name: jenkins
+    state: present
+
+- name: sleep for 30 seconds and continue with play
+  wait_for: timeout=30
+  delegate_to: localhost
+
+- name: init password jenkin
+  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+  changed_when: false
+  register: result
+
+- name: print init password jenkins
+  debug:
+    var: result.stdout
