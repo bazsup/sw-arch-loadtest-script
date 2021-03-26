@@ -1,0 +1,29 @@
+- name: Move jenkins backup files
+  gather_facts: false
+  hosts: server
+  user: azureuser
+  tasks:
+    - name: Debug ACTION
+      debug:
+        var: ACTION
+    
+    - name: Clear buffer directory
+      delegate_to: localhost
+      file: path=buffer/ state=absent
+      when: ACTION == 'download'
+
+    - name: Fetch files from source_host to master
+      synchronize:
+        # src: /home/user/tests/
+        src: /var/lib/jenkins/tests/
+        dest: buffer/
+        mode: pull
+      when: ACTION == 'download'
+
+    - name: Upload files from master to dest_host
+      synchronize:
+        src: buffer/
+        # dest: /home/user/tests
+        dest: "/var/lib/docker/volumes/{{ ansible_user }}_jenkins-volume/_data/tests"
+        mode: push
+      when: ACTION == 'upload'

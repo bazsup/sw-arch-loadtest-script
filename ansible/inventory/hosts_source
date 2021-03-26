@@ -1,0 +1,2 @@
+[server]
+source.example.com ansible_user=user ansible_ssh_private_key_file=path/to/private
