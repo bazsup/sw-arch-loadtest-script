@@ -5,5 +5,5 @@
   vars:
     - update_apt_cache: yes
   roles:
-    # - docker
+    - docker
     - docker-jenkins
