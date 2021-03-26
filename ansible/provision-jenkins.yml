@@ -1,0 +1,9 @@
+- name: setup jenkins master
+  gather_facts: false
+  hosts: jenkins_master
+  become: true
+  vars:
+    - update_apt_cache: yes
+  roles:
+    # - docker
+    - docker-jenkins
