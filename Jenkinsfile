@@ -7,7 +7,7 @@ pipeline {
         stage("set pipeline name") {
             steps {
                 script {
-                    env.currentBuild.displayName = "#${BUILD_NUMBER} - ${HOSTNAME}"
+                    currentBuild.displayName = "#${BUILD_NUMBER} - ${HOSTNAME}"
                 }
             }
         }
