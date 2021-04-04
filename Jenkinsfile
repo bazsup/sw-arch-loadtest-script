@@ -2,6 +2,8 @@ pipeline {
     agent any
     parameters {
         string(name: 'HOSTNAME', defaultValue: 'sh.ta.tnpl.me:8080')
+        string(name: 'LOAD_SHORTEN', defaultValue: '100')
+        string(name: 'LOAD_VISIT', defaultValue: '500')
     }
     stages {
         stage("set pipeline name") {
@@ -12,27 +14,36 @@ pipeline {
             }
         }
         stage("run test parallel") {
-            parallel {
-                stage("test on worker 2 (us-worker)") {
-                    agent { label "us-worker" }
-                    steps {
-                        sh """
-                            whoami
-                            pwd
-                            echo "worker 2" >> temp1.log
-                        """
+            steps {
+                script {
+                    def labels = ["us-worker", "sg-worker"]
+                    def builders = [:]
+                    for (x in labels) {
+                        def label = x
+                        builders[label] = {
+                            node(label) {
+
+                                sh """
+                                    echo "worker ${label}" >> temp.log
+                                """
+                                stash includes: '*.log', name: "log-${label}"
+                                cleanWs()
+                            }
+                        }
                     }
+                    parallel builders
                 }
-                stage("test on worker 3 (sg-worker)") {
-                    agent { label "sg-worker" }
-                    steps {
-                        sh """
-                            whoami
-                            pwd
-                            echo "worker 3" >> temp2.log
-                        """
-                    }
+            }
+        }
+        stage("generate report") {
+            steps {
+                dir('sg-worker') {
+                    unstash "log-sg-worker"
                 }
+                dir('us-worker') {
+                    unstash "log-us-worker"
+                }
+                sh "ls"
             }
         }
     }
