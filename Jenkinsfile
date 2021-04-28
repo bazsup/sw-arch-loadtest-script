@@ -29,7 +29,7 @@ pipeline {
                                 git branch: "main", url: GIT_REPO
                                 sh "git clean -xdf"
                                 sh """
-                                    JAVA_OPTS="-Dhostname=${HOSTNAME} -Dload.shorten=${LOAD_SHORTEN} -Dload.visit=${LOAD_VISIT} -Dload.shorten.duration=10 -Dload.visit.duration=10" \
+                                    JAVA_OPTS="-Dhostname=${HOSTNAME} -Dload.shorten=${LOAD_SHORTEN} -Dload.visit=${LOAD_VISIT} -Dload.shorten.duration=60 -Dload.visit.duration=60" \
 	                                    ./gatling/bin/gatling.sh -s sh.ShortenSimulation -nr
                                     ls
                                 """
