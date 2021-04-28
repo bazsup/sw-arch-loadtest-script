@@ -20,10 +20,22 @@
         mode: pull
       when: ACTION == 'download'
 
+    - name: Capture backup directory
+      delegate_to: localhost
+      shell: ls buffer
+      register: full_backup_dir
+
+    - name: Backup jobs
+      synchronize:
+        src: /var/lib/jenkins/jobs/
+        dest: "buffer/{{ full_backup_dir.stdout }}/jobs/"
+        mode: pull
+      when: ACTION == 'download'
+
     - name: Upload files from master to dest_host
       synchronize:
         src: buffer/
         # dest: /home/user/tests
-        dest: "/var/lib/docker/volumes/{{ ansible_user }}_jenkins-volume/_data/tests"
+        dest: /var/lib/jenkins/tests/
         mode: push
       when: ACTION == 'upload'
