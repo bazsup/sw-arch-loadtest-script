@@ -31,7 +31,6 @@ pipeline {
                                 sh """
                                     JAVA_OPTS="-Dhostname=${HOSTNAME} -Dload.shorten=${LOAD_SHORTEN} -Dload.visit=${LOAD_VISIT} -Dload.shorten.duration=60 -Dload.visit.duration=60" \
 	                                    ./gatling/bin/gatling.sh -s sh.ShortenSimulation -nr
-                                    ls
                                 """
                                 stash includes: '**/*.log', name: "log-${label}"
                             }
@@ -73,11 +72,11 @@ pipeline {
                     ./gatling/bin/gatling.sh -ro short-simulation
                 """
                 gatlingArchive()
-                // gatlingCheck(metrics: [
-                //     'shorten.qps = 100',
-                //     'visit.qps = 100',
-                //     'global.okRate = 100'
-                // ])
+                gatlingCheck(metrics: [
+                    'shorten.qps = 100',
+                    'visit.qps = 100',
+                    'global.okRate = 100'
+                ])
             }
         }
     }
