@@ -73,8 +73,10 @@ pipeline {
                 """
                 gatlingArchive()
                 gatlingCheck(metrics: [
-                    'shorten.qps = 100',
-                    'visit.qps = 100',
+                    'shorten-jenkins-worker-sg.qps = 1000',
+                    'shorten-jenkins-worker-us.qps = 1000',
+                    'visit-jenkins-worker-sg.qps = 1000',
+                    'visit-jenkins-worker-us.qps = 1000',
                     'global.okRate = 100'
                 ])
             }
